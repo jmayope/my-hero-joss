@@ -1,4 +1,5 @@
 import flet as ft
+import requests
 
 from .constants import WIDTH_SCREEN
 
@@ -8,13 +9,30 @@ def login_view(page: ft.Page):
     page.bgcolor = ft.Colors.WHITE
     username = ft.TextField(value="", width=WIDTH_SCREEN, text_style=ft.TextStyle(color=ft.Colors.BLACK))
     password = ft.TextField(value="", password=True, width=WIDTH_SCREEN, text_style=ft.TextStyle(color=ft.Colors.BLACK))
+    title = ft.Text(style=ft.TextStyle(
+            size=20,
+            weight=ft.FontWeight.W_700,
+            color=ft.Colors.BLACK
+        )
+    )
+
+    def get_data():
+        try:
+            r = requests.get("http://127.0.0.1:8000/greeting")
+            data = r.json()
+            print(data["message"])
+            title.value = data["message"]
+        except Exception as ex:
+            title.value = f"Error al conectar con la API: {ex}"
+        page.update()
 
     def authenticate(e): 
         print(username.value)
         print(password.value)
         print("iniciamos sesión")
         page.go("/home")
-        
+    
+    get_data()
 
     return ft.View(
         "/",
@@ -29,14 +47,7 @@ def login_view(page: ft.Page):
                     ),
                     ft.Row(
                         [
-                            ft.Text(
-                                "Inicio de Sesión",
-                                style=ft.TextStyle(
-                                    size=20,
-                                    weight=ft.FontWeight.W_700,
-                                    color=ft.Colors.BLACK
-                                )
-                            ),
+                            title
                         ],
                         alignment=ft.MainAxisAlignment.CENTER
                     ),

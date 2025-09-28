@@ -1,7 +1,7 @@
 import flet as ft
 import requests
 
-from .constants import WIDTH_SCREEN
+from .constants import WIDTH_SCREEN, API_URI
 
 def login_view(page: ft.Page):
 
@@ -16,21 +16,54 @@ def login_view(page: ft.Page):
         )
     )
 
+    dlg_authentication = ft.AlertDialog(
+        content=ft.Column(
+            [
+                ft.ProgressRing(),
+                ft.Text("Autenticando")
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER
+        )
+    )
+
     def get_data():
         try:
-            r = requests.get("http://127.0.0.1:8000/greeting")
+            r = requests.get(f"{API_URI}/greeting")
             data = r.json()
-            print(data["message"])
+            print(data)
             title.value = data["message"]
         except Exception as ex:
             title.value = f"Error al conectar con la API: {ex}"
         page.update()
 
+    def open_dlg(e):
+        page.dialog = dlg_authentication
+        dlg_authentication.open = True
+        page.update()
+
+    def close_dlg(e, dialog, page_ref):
+        dialog.open = False
+        page_ref.update()
+
     def authenticate(e): 
         print(username.value)
         print(password.value)
         print("iniciamos sesión")
-        page.go("/home")
+        open_dlg(e)
+        page.client_storage.set("usermame", username.value)
+        page.client_storage.set("password", password.value)
+        credential = {"username": username.value, "password": password.value}
+        try:
+            r = requests.post(f"{API_URI}/login", json=credential)
+            data = r.json()
+            print(data)
+            close_dlg(e, dlg_authentication, page)
+            page.go("/home")            
+        except Exception as ex:
+            close_dlg(e, dlg_authentication, page)
+            page.open(ft.SnackBar(ft.Text(value=f"{ex}")))
+            page.update()
     
     get_data()
 

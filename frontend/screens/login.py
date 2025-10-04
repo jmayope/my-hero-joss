@@ -17,11 +17,22 @@ def login_view(page: ft.Page):
         )
     )
 
+    dlg_authentication = ft.AlertDialog(
+        content=ft.Column(
+            [
+                ft.ProgressRing(),
+                ft.Text("Autenticando")
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER
+        )
+    )
+
     def get_data():
         try:
             r = requests.get(f"{API_URI}/greeting")
             data = r.json()
-            print(data["message"])
+            print(data)
             title.value = data["message"]
         except Exception as ex:
             title.value = f"Error al conectar con la API: {ex}"

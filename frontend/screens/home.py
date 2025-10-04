@@ -1,4 +1,4 @@
-from  .constants import WIDTH_SCREEN, PRIMARY_COLOR, ASSETS_DIR
+from  .constants import WIDTH_SCREEN, PRIMARY_COLOR, ASSETS_DIR, HEIGHT_CARD_MENU_ITEM
 import flet as ft
 from typing import Dict, Optional
 import json
@@ -71,6 +71,7 @@ def home_view(page: ft.Page):
 
     return ft.View(
         "/home",
+        padding=0,
         controls=[
             ft.Column(
                 [

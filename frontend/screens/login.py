@@ -1,7 +1,8 @@
 import flet as ft
 import requests
+import json
 
-from .constants import WIDTH_SCREEN
+from .constants import WIDTH_SCREEN, API_URI
 
 def login_view(page: ft.Page):
 
@@ -18,7 +19,7 @@ def login_view(page: ft.Page):
 
     def get_data():
         try:
-            r = requests.get("http://127.0.0.1:8000/greeting")
+            r = requests.get(f"{API_URI}/greeting")
             data = r.json()
             print(data["message"])
             title.value = data["message"]
@@ -26,11 +27,20 @@ def login_view(page: ft.Page):
             title.value = f"Error al conectar con la API: {ex}"
         page.update()
 
-    def authenticate(e): 
+    async def authenticate(e): 
         print(username.value)
         print(password.value)
         print("iniciamos sesión")
-        page.go("/home")
+        credentials = {"username": username.value, "password": password.value}
+        try:
+            r = requests.post(f"{API_URI}/login", json=credentials)
+            data = r.json()
+            page.session.set("user_loged", json.dumps(data))
+            print(data)
+            page.go("/home")
+        except Exception as e:
+            print(str(e))
+            page.open(ft.SnackBar(ft.Text(value="Saliendo del aplicativo")))
     
     get_data()
 

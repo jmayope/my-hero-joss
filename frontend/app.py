@@ -3,6 +3,7 @@ import flet as ft
 from screens.login import login_view
 from screens.home import home_view
 from screens.user import user_view
+from screens.residue import residue_view
 from screens.constants import WIDTH_SCREEN
 
 def main(page: ft.Page):
@@ -23,6 +24,8 @@ def main(page: ft.Page):
             page.views.append(home_view(page))
         elif page.route == '/user':
             page.views.append(user_view(page))
+        elif page.route == '/residue':
+            page.views.append(residue_view(page))
         
 
         page.update()
